@@ -3,8 +3,6 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-
-
 dotenv.config();
 
 const app = express();
@@ -19,12 +17,15 @@ mongoose.connect(process.env.MONGODB_URI)
 .catch(err => console.log(err));
 
 //routes
+import userRoute from './routes/userRoute.js';
+import cartRoute from './routes/cartRoute.js';
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-import userRoute from './routes/userRoute.js';
 app.use('/api/users', userRoute);
+app.use('/api/cart', cartRoute);
 
 
 //server launch
