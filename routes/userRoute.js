@@ -51,35 +51,50 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const {email,password} = req.body;
-    if(!email || !password){
-        return res.status(400).json({message: 'Please provide all required fields'});
+    const { email, password } = req.body;
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
     }
+
+    if (!password) {
+        return res.status(400).json({ message: 'Password is required' });
+    }
+
     try {
-        const user = await User.findOne({email: email.toLowerCase()});
-        if(!user){
-            return res.status(404).json({message: 'User not found'});
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        const isaPasswordMatch = await user.comparePassword(password);
-        if(!isaPasswordMatch){
-            return res.status(401).json({message: 'Invalid credentials'});
+
+        const isPasswordMatch = await user.comparePassword(password);
+        if (!isPasswordMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
+
         const userResponse = {
-            _id: user._id,
+            id: user.id,
             fullName: user.fullName,
             email: user.email
         };
-        
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-        res.status(200).json({ success: true, user: userResponse, token });
-    } catch (error) {   
+       
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { 
+            expiresIn: '30d' 
+        });
+
+        res.status(200).json({ 
+            success: true, 
+            user: userResponse, 
+            token 
+        });
+    } catch (error) {  
         console.error('Login error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Login failed' 
+            message: 'An unexpected error occurred during login'
         });
     }
-    
 });
 
 export default router;
