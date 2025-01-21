@@ -21,7 +21,7 @@ import userRoute from './routes/userRoute.js';
 import cartRoute from './routes/cartRoute.js';
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send(`Sever running at Port ${process.env.PORT}!`);
 });
 
 app.use('/api/users', userRoute);

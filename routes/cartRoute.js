@@ -1,5 +1,5 @@
 
-import Cart from "../models/cart.model";
+import Cart from "../models/cart.model.js";
 import { Router } from "express";
 import { protect } from "../middleware/auth.middleware.js";
 
