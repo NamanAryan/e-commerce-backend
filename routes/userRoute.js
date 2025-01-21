@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const isPasswordMatch = await user.comparePassword(password);
+        const isPasswordMatch = await user.matchpasswords(password);
         if (!isPasswordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
