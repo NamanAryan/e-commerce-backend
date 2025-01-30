@@ -7,24 +7,21 @@ const router = Router();
 
 router.post("/add_cart", protect, async (req, res) => {
     const { items, totalPrice } = req.body;
+
     try {
-        if (!items || !items.length || !totalPrice) {
-            return res.status(400).json({
-                message: "Please provide all required fields",
-            });
+        if (!Array.isArray(items) || items.length === 0 || totalPrice === undefined) {
+            return res.status(400).json({ message: "Please provide valid items and total price" });
         }
 
-        if (!items.every(item => item.productId && item.quantity && item.price)) {
-            return res.status(400).json({
-                message: "Invalid items format",
-            });
+        if (!items.every(item => item.productId && Number.isInteger(item.quantity) && item.quantity > 0 && item.price >= 0)) {
+            return res.status(400).json({ message: "Invalid items format" });
         }
 
         let existingCart = await Cart.findOne({ userId: req.user._id });
-        
+
         if (existingCart) {
-            existingCart.items = items;
-            existingCart.totalPrice = totalPrice;
+            existingCart.items.push(...items);
+            existingCart.totalPrice += totalPrice;
             await existingCart.save();
             return res.status(200).json({ success: true, cart: existingCart });
         }
@@ -36,14 +33,13 @@ router.post("/add_cart", protect, async (req, res) => {
         });
 
         res.status(201).json({ success: true, cart });
+
     } catch (error) {
         console.error("Add to cart error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Add to cart failed",
-        });
+        res.status(500).json({ success: false, message: "Add to cart failed" });
     }
 });
+
 
 router.delete("/delete_cart/:id", protect, async (req, res) => {
     try {
