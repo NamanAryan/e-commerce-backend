@@ -14,7 +14,7 @@ router.post("/add_cart", protect, async (req, res) => {
         
         // Create the cart with explicit userId assignment
         const cart = await Cart.create({
-            userId: req.user._id,  
+            userId: req.user.id,  
             items: items,
             totalPrice: totalPrice
         });
