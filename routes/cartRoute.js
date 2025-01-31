@@ -7,21 +7,31 @@ const router = Router();
 
 router.post("/add_cart", protect, async (req, res) => {
     try {
-        // Get userId from auth middleware
-        const userId = req.user._id;  // or req.user.id depending on your auth setup
-        
-        const { items, totalPrice } = req.body;
+        // Debug the user object from auth middleware
+        console.log('Auth user:', req.user);
 
+        const { items, totalPrice } = req.body;
+        
+        // Create the cart with explicit userId assignment
         const cart = await Cart.create({
-            userId,              // Use userId from auth middleware
-            items,
-            totalPrice
+            userId: req.user.id,  // or req.user._id - check which one your auth provides
+            items: items,
+            totalPrice: totalPrice
         });
 
         res.status(201).json({ success: true, cart });
     } catch (error) {
         console.warn('Add to cart error:', error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            // Add more error details in development
+            debug: {
+                userId: req.user?.id,
+                items: req.body.items,
+                error: error.toString()
+            }
+        });
     }
 });
 
