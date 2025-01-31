@@ -5,51 +5,23 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/add_cart", protect, async (req, res) => {
-    const { items, totalPrice } = req.body;
-
+router.post("/add_cart", auth, async (req, res) => {
     try {
-        if (!Array.isArray(items) || items.length === 0 || totalPrice === undefined) {
-            return res.status(400).json({ message: "Please provide valid items and total price" });
-        }
+        // Get userId from auth middleware
+        const userId = req.user._id;  // or req.user.id depending on your auth setup
+        
+        const { items, totalPrice } = req.body;
 
-        if (!items.every(item => item.productId && Number.isInteger(item.quantity) && item.quantity > 0 && item.price >= 0)) {
-            return res.status(400).json({ message: "Invalid items format" });
-        }
-
-        let existingCart = await Cart.findOne({ userId: req.user._id });
-
-        if (existingCart) {
-            items.forEach(newItem => {
-                const existingItem = existingCart.items.find(item => item.productId === newItem.productId);
-                if (existingItem) {
-                    // Increase quantity if the item is already in the cart
-                    existingItem.quantity += newItem.quantity;
-                } else {
-                    // Add new item if not in the cart
-                    existingCart.items.push(newItem);
-                }
-            });
-
-            // Recalculate total price
-            existingCart.totalPrice = existingCart.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-            await existingCart.save();
-
-            return res.status(200).json({ success: true, cart: existingCart });
-        }
-
-        // If no existing cart, create a new one
         const cart = await Cart.create({
-            userId: req.user._id,
+            userId,              // Use userId from auth middleware
             items,
-            totalPrice,
+            totalPrice
         });
 
         res.status(201).json({ success: true, cart });
-
     } catch (error) {
-        console.error("Add to cart error:", error);
-        res.status(500).json({ success: false, message: "Add to cart failed" });
+        console.warn('Add to cart error:', error);
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 

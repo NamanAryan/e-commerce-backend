@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;  
 
-// Backend cart schema
 const CartSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,11 +13,11 @@ const CartSchema = new Schema({
                 type: String,  
                 required: true
             },
-            title: {         // Add title
+            title: {        
                 type: String,
                 required: true
             },
-            image: {         // Add image
+            image: {         
                 type: String,
                 required: true
             },
