@@ -5,7 +5,7 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/add_cart", auth, async (req, res) => {
+router.post("/add_cart", protect, async (req, res) => {
     try {
         // Get userId from auth middleware
         const userId = req.user._id;  // or req.user.id depending on your auth setup
