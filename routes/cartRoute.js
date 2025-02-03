@@ -5,32 +5,49 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
+// backend/routes/cartRoute.js
 router.post("/add_cart", protect, async (req, res) => {
     try {
-        console.log('Auth user:', req.user);
-
+        const userId = req.user._id;  // Get from auth middleware
         const { items, totalPrice } = req.body;
-        const cart = await Cart.create({
-            userId: req.user.id,  
-            items: items,
-            totalPrice: totalPrice
+
+        console.log('Add cart request:', {
+            userId,
+            items,
+            totalPrice,
+            user: req.user  // Debug auth middleware
         });
+
+        // Check if cart exists for user
+        let existingCart = await Cart.findOne({ userId });
+
+        let cart;
+        if (existingCart) {
+            // Update existing cart
+            existingCart.items = [...existingCart.items, ...items];
+            existingCart.totalPrice = totalPrice;
+            cart = await existingCart.save();
+        } else {
+            // Create new cart
+            cart = await Cart.create({
+                userId,
+                items,
+                totalPrice
+            });
+        }
+
+        console.log('Saved cart:', cart);  // Debug saved cart
 
         res.status(201).json({ success: true, cart });
     } catch (error) {
-        console.warn('Add to cart error:', error);
+        console.error('Add cart error:', error);
         res.status(500).json({ 
             success: false, 
             message: error.message,
-            debug: {
-                userId: req.user?.id,
-                items: req.body.items,
-                error: error.toString()
-            }
+            debug: { userId: req.user?._id }  // Debug userId
         });
     }
 });
-
 
 
 router.delete("/delete_cart/:id", protect, async (req, res) => {
