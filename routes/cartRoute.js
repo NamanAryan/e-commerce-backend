@@ -5,30 +5,26 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// backend/routes/cartRoute.js
 router.post("/add_cart", protect, async (req, res) => {
     try {
-        const userId = req.user._id;  // Get from auth middleware
+        const userId = req.user._id;  
         const { items, totalPrice } = req.body;
 
         console.log('Add cart request:', {
             userId,
             items,
             totalPrice,
-            user: req.user  // Debug auth middleware
+            user: req.user  
         });
 
-        // Check if cart exists for user
         let existingCart = await Cart.findOne({ userId });
 
         let cart;
         if (existingCart) {
-            // Update existing cart
-            existingCart.items = [...existingCart.items, ...items];
+            existingCart.items = items;  
             existingCart.totalPrice = totalPrice;
             cart = await existingCart.save();
         } else {
-            // Create new cart
             cart = await Cart.create({
                 userId,
                 items,
