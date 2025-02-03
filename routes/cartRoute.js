@@ -7,12 +7,9 @@ const router = Router();
 
 router.post("/add_cart", protect, async (req, res) => {
     try {
-        // Debug the user object from auth middleware
         console.log('Auth user:', req.user);
 
         const { items, totalPrice } = req.body;
-        
-        // Create the cart with explicit userId assignment
         const cart = await Cart.create({
             userId: req.user.id,  
             items: items,
@@ -25,7 +22,6 @@ router.post("/add_cart", protect, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: error.message,
-            // Add more error details in development
             debug: {
                 userId: req.user?.id,
                 items: req.body.items,
@@ -107,16 +103,30 @@ router.patch("/update_cart/:id", protect, async (req, res) => {
 
 router.get("/my_cart", protect, async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.user._id });
-        
-        if (!cart) {
-            return res.status(404).json({ message: "No cart found" });
+        // Find all carts for this user, sort by latest
+        const carts = await Cart.find({ 
+            userId: req.user._id 
+        }).sort({ createdAt: -1 });
+       
+        // If no carts exist, send empty array instead of 404
+        if (!carts || carts.length === 0) {
+            return res.status(200).json({ 
+                success: true, 
+                cart: { items: [] } 
+            });
         }
 
-        res.status(200).json({ success: true, cart });
+        // Return the most recent cart
+        res.status(200).json({ 
+            success: true, 
+            cart: carts[0] 
+        });
     } catch (error) {
         console.error("Get cart error:", error);
-        res.status(500).json({ success: false, message: "Get cart failed" });
+        res.status(500).json({ 
+            success: false, 
+            message: "Get cart failed" 
+        });
     }
 });
 
