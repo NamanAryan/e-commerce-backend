@@ -1,4 +1,4 @@
-// middleware/auth.middleware.js
+
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';  // Import your User model
 
@@ -27,3 +27,5 @@ export const protect = async (req, res, next) => {
         res.status(401).json({message: 'Not authorized, no token'});
     }
 };
+
+export default protect;
