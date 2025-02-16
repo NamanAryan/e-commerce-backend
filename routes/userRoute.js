@@ -1,5 +1,6 @@
 import User from '../models/user.model.js';
 import { Router } from 'express';
+import protect from '../middleware/authMiddleware.js';
 const router = Router();
 import jwt from 'jsonwebtoken';
 
@@ -97,7 +98,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/profile', async (req, res) => {
+router.get('/profile', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
@@ -106,10 +107,11 @@ router.get('/profile', async (req, res) => {
         res.status(200).json({ success: true, user });
     } catch (error) {
         console.error('Profile error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'An unexpected error occurred' 
+        res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred'
         });
     }
 });
+
 export default router;
