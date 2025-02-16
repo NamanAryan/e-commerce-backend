@@ -1,6 +1,6 @@
 import User from '../models/user.model.js';
 import { Router } from 'express';
-import protect from '../middleware/authMiddleware.js';
+import protect from '../middleware/auth.middleware.js';
 const router = Router();
 import jwt from 'jsonwebtoken';
 
