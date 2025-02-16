@@ -114,4 +114,40 @@ router.get('/profile', protect, async (req, res) => {
     }
 });
 
+router.put('/profile', async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { fullName, email, phone, address } = req.body;
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                fullName,
+                email,
+                phone,
+                address
+            },
+            { new: true } 
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred'
+        });
+    }
+});
+
 export default router;
