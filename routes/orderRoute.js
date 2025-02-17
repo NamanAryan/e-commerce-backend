@@ -1,4 +1,4 @@
-import Order from '../models/order.model.js';
+import { Order } from '../models/order.model.js';
 import { Router } from 'express';
 import { protect } from '../middleware/auth.middleware.js';
 const router = Router();
