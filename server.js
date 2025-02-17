@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
+
 dotenv.config();
 
 const app = express();
@@ -32,6 +33,7 @@ mongoose.connect(process.env.MONGODB_URI)
 //routes
 import userRoute from './routes/userRoute.js';
 import cartRoute from './routes/cartRoute.js';
+import orderRoute from './routes/orderRoute.js';
 
 app.get('/', (req, res) => {
   res.send(`Sever running at Port ${process.env.PORT}!`);
@@ -39,6 +41,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoute);
 app.use('/api/cart', cartRoute);
+app.use('/api/order', orderRoute);
 
 
 //server launch

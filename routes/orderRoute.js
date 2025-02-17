@@ -4,18 +4,15 @@ import { protect } from '../middleware/authMiddleware.js';
 const router = Router();
 
 router.post('/create', protect, async (req, res) => {
-    const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body;
-    if (!orderItems || !shippingAddress || !paymentMethod || !itemsPrice || !taxPrice || !shippingPrice || !totalPrice) {
+    res.send('Order creation route');
+    const { orderItems, shippingAddress, itemsPrice, totalPrice } = req.body;
+    if (!orderItems || !shippingAddress || !itemsPrice || !totalPrice) {
         return res.status(400).json({ message: 'Please provide all required fields' });
     }
     try {
         const order = await Order.create({
             orderItems,
-            shippingAddress,
-            paymentMethod,
             itemsPrice,
-            taxPrice,
-            shippingPrice,
             totalPrice
         });
         res.status(201).json({ success: true, order });
@@ -37,3 +34,5 @@ router.get('/:id', protect, async (req, res) => {
         res.status(500).json({ success: false, message: 'Order retrieval failed' });
     }
 });
+
+export default router;
