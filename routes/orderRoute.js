@@ -1,6 +1,6 @@
 import Order from '../models/order.model.js';
 import { Router } from 'express';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect } from '../middleware/auth.middleware.js';
 const router = Router();
 
 router.post('/create', protect, async (req, res) => {
