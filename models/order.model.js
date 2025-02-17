@@ -6,25 +6,29 @@ const orderSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    items: [
-        {
-            product: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
-            },
-            price: {
-                type: Number,
-                required: true
-            }
+    orderItems: [{
+        title: {
+            type: String,
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        },
+        image: {
+            type: String,
+            required: true
+        },
+        price: {
+            type: Number,
+            required: true
         }
-    ],
-    totalAmount: {
+    }],
+    shippingAddress: {
+        type: String,
+        required: true
+    },
+    totalPrice: {
         type: Number,
         required: true
     },
@@ -35,5 +39,4 @@ const orderSchema = new mongoose.Schema({
 });
 
 const Order = mongoose.model('Order', orderSchema);
-
 export default Order;
