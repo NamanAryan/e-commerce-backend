@@ -4,23 +4,28 @@ import { protect } from '../middleware/auth.middleware.js';
 const router = Router();
 
 router.post('/create', protect, async (req, res) => {
-    res.send('Order creation route');
     const { orderItems, shippingAddress, itemsPrice, totalPrice } = req.body;
+
     if (!orderItems || !shippingAddress || !itemsPrice || !totalPrice) {
         return res.status(400).json({ message: 'Please provide all required fields' });
     }
+
     try {
         const order = await Order.create({
+            user: req.user._id, 
             orderItems,
+            shippingAddress,
             itemsPrice,
             totalPrice
         });
+
         res.status(201).json({ success: true, order });
     } catch (error) {
         console.error('Order creation error:', error);
         res.status(500).json({ success: false, message: 'Order creation failed' });
     }
 });
+
 
 router.get('/:id', protect, async (req, res) => {
     try {
